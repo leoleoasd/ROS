@@ -2,3 +2,9 @@
 rustflags = [
     "-Clink-arg=-Tsrc/linker.ld", "-Cforce-frame-pointers=yes"
 ]
+
+[alias]
+xtask = "run --package xtask --"
+make = "xtask make"
+qemu = "xtask qemu"
+debug = "xtask debug"
