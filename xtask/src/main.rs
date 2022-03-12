@@ -122,7 +122,6 @@ fn xtask_qemu_run(xtask_env: &XtaskEnv) {
             dist_dir(xtask_env).join("kernel.bin").to_str().unwrap(),
         ])
         .args(&["-smp", "2"]) // 8 cores
-        .args(&["-m", "8M"])
         .arg("-nographic")
         .status()
         .unwrap();

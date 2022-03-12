@@ -22,7 +22,7 @@ fn print(node: &Node, level: usize) {
     println!("{}", node.name);
     for (k, v) in &node.props {
         print!("{}", indent);
-        print!("  {}: ",k);
+        print!("| {}: ",k);
         if k == "reg" {
             for (index, byte) in v.iter().enumerate() {
                 if index % 4 == 0 {
