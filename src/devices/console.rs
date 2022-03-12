@@ -1,4 +1,4 @@
-use crate::sbi::*;
+use crate::sbi;
 use core::fmt::{self, Write};
 use spin::Mutex;
 
@@ -36,5 +36,12 @@ macro_rules! print {
 macro_rules! println {
     ($fmt: literal $(, $($arg: tt)+)?) => {
         $crate::devices::console::print(format_args!(concat!($fmt, "\n") $(, $($arg)+)?));
+    }
+}
+
+#[macro_export]
+macro_rules! log {
+    ($fmt: literal $(, $($arg: tt)+)?) => {
+        $crate::devices::console::print(format_args!(concat!("[ros] ", $fmt, "\n") $(, $($arg)+)?));
     }
 }

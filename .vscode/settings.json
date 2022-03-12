@@ -1,0 +1,14 @@
+{
+    "rust-analyzer.checkOnSave.allTargets": false,
+    "rust-analyzer.checkOnSave.overrideCommand": [
+        "cargo",
+        "clippy",
+        "--message-format=json",
+        "--bin",
+        "ros",
+        "--all-features",
+        "--target",
+        "riscv64gc-unknown-none-elf"
+    ],
+    "rust-analyzer.cargo.target": "riscv64gc-unknown-none-elf"
+}

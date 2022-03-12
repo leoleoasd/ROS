@@ -7,7 +7,6 @@ use std::{
     process::{self, Command, Stdio},
 };
 
-
 // 不要修改DEFAULT_TARGET；如果你需要编译到别的目标，请使用--target编译选项！
 const DEFAULT_TARGET: &'static str = "riscv64gc-unknown-none-elf";
 
@@ -66,7 +65,6 @@ fn main() {
     }
 }
 
-
 fn xtask_build_kernel(xtask_env: &XtaskEnv) {
     let cargo = env::var("CARGO").unwrap_or_else(|_| "cargo".to_string());
     let mut command = Command::new(cargo);
@@ -118,9 +116,13 @@ fn xtask_qemu_run(xtask_env: &XtaskEnv) {
     let status = Command::new("qemu-system-riscv64")
         .current_dir(project_root())
         .args(&["-machine", "virt"])
-        .args(&["-bios", "bin/rustsbi-qemu.bin"])
-        .args(&["-kernel",  dist_dir(xtask_env).join("kernel.bin").to_str().unwrap()])
-        // .args(&["-smp", "8"]) // 8 cores
+        // .args(&["-bios", "bin/rustsbi-qemu.bin"])
+        .args(&[
+            "-kernel",
+            dist_dir(xtask_env).join("kernel.bin").to_str().unwrap(),
+        ])
+        .args(&["-smp", "2"]) // 8 cores
+        .args(&["-m", "8M"])
         .arg("-nographic")
         .status()
         .unwrap();
@@ -135,8 +137,12 @@ fn xtask_qemu_debug(xtask_env: &XtaskEnv) {
     let status = Command::new("qemu-system-riscv64")
         .current_dir(project_root())
         .args(&["-machine", "virt"])
-        .args(&["-bios", "bin/rustsbi-qemu.bin"])
-        .args(&["-kernel", dist_dir(xtask_env).join("kernel.bin").to_str().unwrap()])
+        .args(&["-m", "1G"])
+        // .args(&["-bios", "bin/rustsbi-qemu.bin"])
+        .args(&[
+            "-kernel",
+            dist_dir(xtask_env).join("kernel.bin").to_str().unwrap(),
+        ])
         // .args(&["-smp", "8"]) // 8 cores
         .arg("-nographic")
         .args(&["-gdb", "tcp::1234", "-S"])

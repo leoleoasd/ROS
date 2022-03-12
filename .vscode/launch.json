@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "type": "gdb",
+            "request": "attach",
+            "name": "Attach to gdbserver",
+            "executable": "${workspaceRoot}/target/riscv64gc-unknown-none-elf/debug/ros",
+            "target": "localhost:1234",
+            "gdbpath": "/usr/sbin/riscv64-linux-gnu-gdb",
+            "remote": true,
+            "cwd": "${workspaceRoot}",
+            "valuesFormatting": "parseText",
+            "preLaunchTask": "start qemu",
+            "autorun": [
+                "set substitute-path  /rustc/4ce3749235fc31d15ebd444b038a9877e8c700d7/ /home/leo/.rustup/toolchains/nightly-2022-03-01-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/"
+            ]
+        }
+    ]
+}
