@@ -10,8 +10,8 @@ mod sbi;
 
 extern crate alloc;
 
-use alloc::*;
 use alloc::string::*;
+use alloc::*;
 use core::arch::global_asm;
 use linked_list_allocator::LockedHeap;
 
