@@ -13,10 +13,10 @@ extern crate alloc;
 use alloc::string::*;
 use alloc::*;
 use core::arch::global_asm;
-use linked_list_allocator::LockedHeap;
+use buddy_system_allocator::LockedHeap;
 
 #[global_allocator]
-static HEAP: LockedHeap = LockedHeap::empty();
+static HEAP: LockedHeap<32> = LockedHeap::empty();
 
 global_asm!(
     "

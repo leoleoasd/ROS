@@ -4,7 +4,7 @@
             "type": "gdb",
             "request": "attach",
             "name": "Attach to gdbserver",
-            "executable": "${workspaceRoot}/target/riscv64gc-unknown-none-elf/debug/ros",
+            "executable": "${workspaceRoot}/target/riscv64imac-unknown-none-elf/debug/ros",
             "target": "localhost:1234",
             "gdbpath": "/usr/sbin/riscv64-linux-gnu-gdb",
             "remote": true,

@@ -8,7 +8,7 @@
         "ros",
         "--all-features",
         "--target",
-        "riscv64gc-unknown-none-elf"
+        "riscv64imac-unknown-none-elf"
     ],
-    "rust-analyzer.cargo.target": "riscv64gc-unknown-none-elf"
+    "rust-analyzer.cargo.target": "riscv64imac-unknown-none-elf"
 }

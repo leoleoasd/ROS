@@ -8,7 +8,7 @@ use std::{
 };
 
 // 不要修改DEFAULT_TARGET；如果你需要编译到别的目标，请使用--target编译选项！
-const DEFAULT_TARGET: &'static str = "riscv64gc-unknown-none-elf";
+const DEFAULT_TARGET: &'static str = "riscv64imac-unknown-none-elf";
 
 #[derive(Debug)]
 struct XtaskEnv {
@@ -121,6 +121,7 @@ fn xtask_qemu_run(xtask_env: &XtaskEnv) {
             "-kernel",
             dist_dir(xtask_env).join("kernel.bin").to_str().unwrap(),
         ])
+        .args(&["-drive", "if=none,format=raw,file=image.img,id=foo", "-device", "virtio-blk-device,bus=virtio-mmio-bus.0,drive=foo"])
         .args(&["-smp", "2"]) // 8 cores
         .arg("-nographic")
         .args(&["-m", "32m"])
