@@ -55,6 +55,7 @@ extern "C" fn main(hartid: usize, dtb_pa: usize) {
     unsafe {
         devices::device_tree::init_tree(dtb_pa);
     }
+    mm::alloc_mm();
     sbi::shutdown();
 }
 fn clear_bss() {
