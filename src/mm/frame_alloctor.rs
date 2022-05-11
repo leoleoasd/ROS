@@ -9,13 +9,13 @@ use mem::ManuallyDrop;
 use mem::forget;
 
 pub struct Frame {
-	ppn: PhysicalPageNumber,
+	pub ppn: PhysicalPageNumber,
 	r: Option<SysTlsfRegion>
 }
 pub struct FrameRegion {
-	ppn: PhysicalPageNumber,
+	pub ppn: PhysicalPageNumber,
 	r: Option<SysTlsfRegion>,
-	size: usize
+	pub size: usize
 }
 
 impl Drop for Frame {
@@ -23,6 +23,7 @@ impl Drop for Frame {
 		unsafe {
 			dealloc(self.r.take().unwrap());
 		}
+		log!("dropped");
 	}
 }
 impl Drop for FrameRegion {
@@ -30,6 +31,25 @@ impl Drop for FrameRegion {
 		unsafe {
 			dealloc(self.r.take().unwrap());
 		}
+		log!("dropped");
+	}
+}
+
+impl From<Frame> for FrameRegion {
+	fn from(f: Frame) -> Self {
+		let mut x = ManuallyDrop::new(f);
+		FrameRegion {
+			ppn: x.ppn,
+			r: x.r.take(),
+			size: 1
+		}
+	}
+}
+impl From<FrameRegion> for Frame {
+	fn from(fr: FrameRegion) -> Self {
+		assert_eq!(fr.size, 1);
+		let mut x = ManuallyDrop::new(fr);
+		Frame { ppn: x.ppn, r: x.r.take() }
 	}
 }
 
@@ -64,6 +84,7 @@ impl FrameAllocator {
 impl FrameAllocator {
 	fn alloc(&mut self, size: usize) -> Option<(SysTlsfRegion, PhysicalPageNumber)> {
 		let (region, offset) = self.allocator.alloc(size)?;
+		log!("allocated: {:?}", &region);
 		Some((region, PhysicalPageNumber(self.start.0 + offset)))
 	}
 	fn dealloc(&mut self, r: SysTlsfRegion) -> Result<(), SysTlsfRegion> {
