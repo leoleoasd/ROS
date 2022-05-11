@@ -7,6 +7,7 @@
 mod devices;
 mod panic;
 mod sbi;
+mod mm;
 
 extern crate alloc;
 
@@ -52,7 +53,7 @@ extern "C" fn main(hartid: usize, dtb_pa: usize) {
         log!("[{}] Hart ID {} status: {}", hartid, i, result.value);
     }
     unsafe {
-        devices::device_tree::print_tree(dtb_pa);
+        devices::device_tree::init_tree(dtb_pa);
     }
     sbi::shutdown();
 }

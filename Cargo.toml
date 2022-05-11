@@ -12,6 +12,7 @@ device_tree = { git = "https://github.com/rcore-os/device_tree-rs/" }
 buddy_system_allocator = { version="0.8.0", features = ["use_spin"] }
 riscv = "0.7.0"
 once_cell = {version = "1.10.0", features = ['alloc'], default_features = false}
+xalloc = { git = "https://github.com/leoleoasd/xalloc-rs/", default_features = false}
 
 [workspace]
 members = ['xtask', '']
