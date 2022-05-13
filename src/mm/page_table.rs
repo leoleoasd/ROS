@@ -119,7 +119,7 @@ impl PageTable {
 				return None;	// should be dentry but is not
 			}
 		}
-		None	// should not be here
+		None	// should never be used
 	}
 
 	/// Try finding correspond `PageTableEntry` and return.
@@ -143,6 +143,6 @@ impl PageTable {
 				return None;	// should be dentry but is not
             }
         }
-        None	// should not be here
+        None	// should never be used
     }
 }
