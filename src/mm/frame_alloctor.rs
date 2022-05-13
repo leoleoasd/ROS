@@ -76,7 +76,7 @@ impl FrameAllocator {
 		Self {
 			start,
 			end,
-			allocator: SysTlsf::new(end.0 - start.0)
+			allocator: SysTlsf::new(usize::from(end) - usize::from(start))
 		}
 	}
 }
@@ -85,7 +85,7 @@ impl FrameAllocator {
 	fn alloc(&mut self, size: usize) -> Option<(SysTlsfRegion, PhysicalPageNumber)> {
 		let (region, offset) = self.allocator.alloc(size)?;
 		log!("allocated: {:?}", &region);
-		Some((region, PhysicalPageNumber(self.start.0 + offset)))
+		Some((region, PhysicalPageNumber(usize::from(self.start) + offset)))
 	}
 	fn dealloc(&mut self, r: SysTlsfRegion) -> Result<(), SysTlsfRegion> {
 		self.allocator.dealloc(r)

@@ -5,11 +5,13 @@
 
 #[macro_use]
 mod devices;
+mod config;
 mod panic;
 mod sbi;
 mod mm;
 
 extern crate alloc;
+extern crate bitflags;
 
 use alloc::string::*;
 use alloc::*;
