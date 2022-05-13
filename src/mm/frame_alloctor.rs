@@ -21,7 +21,7 @@ pub struct FrameRegion {
 impl Drop for Frame {
 	fn drop(&mut self) {
 		unsafe {
-			dealloc(self.r.take().unwrap());
+			frame_dealloc(self.r.take().unwrap());
 		}
 		log!("dropped");
 	}
@@ -29,7 +29,7 @@ impl Drop for Frame {
 impl Drop for FrameRegion {
 	fn drop(&mut self) {
 		unsafe {
-			dealloc(self.r.take().unwrap());
+			frame_dealloc(self.r.take().unwrap());
 		}
 		log!("dropped");
 	}
@@ -94,12 +94,12 @@ impl FrameAllocator {
 
 static ALLOCATOR: OnceBox<Mutex<FrameAllocator>> = OnceBox::new();
 
-pub fn alloc_multiple(size: usize) -> Option<FrameRegion> {
+pub fn frame_alloc_multiple(size: usize) -> Option<FrameRegion> {
 	let (region, ppn) = ALLOCATOR.get()?.lock().alloc(size)?;
 	Some(FrameRegion { ppn, r: Some(region), size })
 }
 
-pub fn alloc() -> Option<Frame> {
+pub fn frame_alloc() -> Option<Frame> {
 	let (region, ppn) = ALLOCATOR.get()?.lock().alloc(1)?;
 	Some(Frame { ppn, r: Some(region) })
 }
@@ -114,7 +114,7 @@ pub fn alloc() -> Option<Frame> {
 /// Safety: This is unsafe because running it twice will deallocate the same frame twice.
 /// `Drop` of the `Frame` is generally recommended.
 /// Only use this to dealloc frames **not allocated `alloc`**.
-unsafe fn dealloc(r: SysTlsfRegion) -> Option<()> {
+unsafe fn frame_dealloc(r: SysTlsfRegion) -> Option<()> {
 	ALLOCATOR.get()?.lock().dealloc(r).ok()
 }
 

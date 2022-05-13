@@ -3,7 +3,7 @@ use alloc::vec;
 use bitflags::*;
 use bitfield::*;
 
-use super::{PhysicalPageNumber, frame_alloctor::{Frame, FrameRegion, alloc}, addresses::VirtualPageNumber};
+use super::{PhysicalPageNumber, frame_alloctor::{Frame, FrameRegion, frame_alloc}, addresses::VirtualPageNumber};
 
 bitflags! {
     pub struct PTEFlags: u8 {
@@ -64,20 +64,85 @@ impl PageTableEntry {
     pub fn executable(&self) -> bool {
         (self.flags() & PTEFlags::X) != PTEFlags::empty()
     }
+
+	pub fn is_dentry(&self) -> bool {
+		(self.flags() & PTEFlags::V & (PTEFlags::R | PTEFlags::W | PTEFlags::X))
+			!= PTEFlags::empty()
+	}
 }
 
 impl PageTable {
 	pub fn new() -> Self {
-		let frame = alloc().unwrap();
+		let frame = frame_alloc().unwrap();
 		PageTable {
 			root_ppn: frame.ppn,
 			frames: vec![frame]
 		}
 	}
-	pub fn map(&mut self, vpn: VirtualPageNumber, ppn: PhysicalPageNumber, flags: PTEFlags) {
-		todo!()
+	/// Please remember to refresh TLB
+	pub fn map(&mut self, vpn: VirtualPageNumber, ppn: PhysicalPageNumber, flags: PTEFlags)
+		-> Result<(), VirtualPageNumber> {
+		let pte = self.try_find_pte(vpn).ok_or(vpn)?;
+        if pte.is_valid() {
+			return Err(vpn);		// has been mapped before.
+		}
+		assert_ne!(flags & (PTEFlags::R | PTEFlags::W | PTEFlags::X), PTEFlags::empty(),
+			"invalid flags, should contain at least one of R, W, and X.");
+        *pte = PageTableEntry::new(ppn, flags | PTEFlags::V);
+		Ok(())
 	}
-    pub fn unmap(&mut self, vpn: VirtualPageNumber) {
-		todo!()
+	/// Please remember to refresh TLB
+    pub fn unmap(&mut self, vpn: VirtualPageNumber) -> Result<(), VirtualPageNumber> {
+		let pte = self.find_pte(vpn).ok_or(vpn)?;
+        if !pte.is_valid() {
+			return Err(vpn);		// has not been mapped yet.
+		}
+		*pte = PageTableEntry::empty();
+		Ok(())
 	}
+
+	/// Find correspond `PageTableEntry` and return.
+	/// Returns `None` if not found.
+	pub fn find_pte(&self, vpn: VirtualPageNumber) -> Option<&mut PageTableEntry> {
+		let idxs = vpn.indexes();
+		let mut ppn = self.root_ppn;
+		//let mut result: Option<&mut PageTableEntry> = None;
+		for i in 0..idxs.len() {
+			let pte = &mut ppn.get_pte_array()[idxs[i]];
+			if !pte.is_valid() {
+				return None;
+			} else if i == 2 {
+				return Some(pte);
+			} else if pte.is_dentry() {
+				ppn = pte.ppn();
+			} else {
+				return None;	// should be dentry but is not
+			}
+		}
+		None	// should not be here
+	}
+
+	/// Try finding correspond `PageTableEntry` and return.
+	/// Recursively creates PDE and PTE if not found.
+	/// Note that PTE returned may not be valid.
+	fn try_find_pte(&mut self, vpn: VirtualPageNumber) -> Option<&mut PageTableEntry> {
+        let idxs = vpn.indexes();
+        let mut ppn = self.root_ppn;
+        //let mut result: Option<&mut PageTableEntry> = None;
+        for i in 0..idxs.len() {
+            let pte = &mut ppn.get_pte_array()[idxs[i]];
+            if i == 2 {
+                return Some(pte);
+            } else if !pte.is_valid() {
+                let frame = frame_alloc()?;
+                *pte = PageTableEntry::new(frame.ppn, PTEFlags::V);
+                self.frames.push(frame);
+            } else if pte.is_dentry() {
+				ppn = pte.ppn();
+			} else {
+				return None;	// should be dentry but is not
+            }
+        }
+        None	// should not be here
+    }
 }
