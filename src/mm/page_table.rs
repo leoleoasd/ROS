@@ -1,7 +1,6 @@
 use alloc::vec::Vec;
 use alloc::vec;
 use bitflags::*;
-use bitfield::*;
 
 use super::{PhysicalPageNumber, frame_alloctor::{Frame, FrameRegion, frame_alloc}, addresses::VirtualPageNumber};
 

@@ -14,7 +14,6 @@ riscv = "0.7.0"
 once_cell = {version = "1.10.0", features = ['alloc'], default_features = false}
 xalloc = { git = "https://github.com/leoleoasd/xalloc-rs/", default_features = false}
 bitflags = "1.2.1"
-bitfield = "0.13.2"
 
 [workspace]
 members = ['xtask', '']
