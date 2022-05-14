@@ -7,6 +7,7 @@
 mod devices;
 mod panic;
 mod sbi;
+mod trap;
 
 extern crate alloc;
 
@@ -79,9 +80,4 @@ fn init_heap() {
         HEAP.lock()
             .init(heap_start as usize, heap_end as usize - heap_start as usize);
     }
-    log!("Testing heap!");
-    let mut vec = vec![1, 2, 3];
-    log!("{:?}", vec);
-    vec.push(1);
-    log!("{:?}", vec);
 }
