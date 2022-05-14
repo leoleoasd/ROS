@@ -34,6 +34,10 @@ fn main() {
             (about: "Run QEMU")
             (@arg release: --release "Build artifacts in release mode, with optimizations")
         )
+        (@subcommand test =>
+            (about: "Run tests")
+            (@arg release: --release "Build artifacts in release mode, with optimizations")
+        )
         (@subcommand debug =>
             (about: "Debug with QEMU and GDB stub")
         )
@@ -56,6 +60,13 @@ fn main() {
         xtask_build_kernel(&xtask_env);
         xtask_binary_kernel(&xtask_env);
         xtask_qemu_run(&xtask_env);
+    } else if let Some(matches) = matches.subcommand_matches("test") {
+        if matches.is_present("release") {
+            xtask_env.compile_mode = CompileMode::Release;
+        }
+        xtask_build_kernel(&xtask_env);
+        xtask_binary_kernel(&xtask_env);
+        xtask_qemu_test(&xtask_env);
     } else if let Some(_matches) = matches.subcommand_matches("debug") {
         xtask_build_kernel(&xtask_env);
         xtask_binary_kernel(&xtask_env);
@@ -121,7 +132,50 @@ fn xtask_qemu_run(xtask_env: &XtaskEnv) {
             "-kernel",
             dist_dir(xtask_env).join("kernel.bin").to_str().unwrap(),
         ])
-        .args(&["-drive", "if=none,format=raw,file=image.img,id=foo", "-device", "virtio-blk-device,bus=virtio-mmio-bus.0,drive=foo"])
+        .args(&[
+            "-drive",
+            "if=none,format=raw,file=image.img,id=foo",
+            "-device",
+            "virtio-blk-device,bus=virtio-mmio-bus.0,drive=foo",
+        ])
+        .args(&["-smp", "2"]) // 8 cores
+        .arg("-nographic")
+        .args(&["-m", "32m"])
+        .status()
+        .unwrap();
+
+    if !status.success() {
+        println!("qemu failed");
+        process::exit(1);
+    }
+}
+
+fn xtask_qemu_test(xtask_env: &XtaskEnv) {
+    /*
+    qemu: build
+    @qemu-system-riscv64 \
+            -machine virt \
+            -nographic \
+            -bios none \
+            -device loader,file={{rustsbi-bin}},addr=0x80000000 \
+            -device loader,file={{test-kernel-bin}},addr=0x80200000 \
+            -smp threads={{threads}}
+    */
+    let status = Command::new("qemu-system-riscv64")
+        .current_dir(project_root())
+        .args(&["-machine", "virt"])
+        // .args(&["-bios", "bin/rustsbi-qemu.bin"])
+        .args(&[
+            "-kernel",
+            dist_dir(xtask_env).join("kernel.bin").to_str().unwrap(),
+        ])
+        .args(&[
+            "-drive",
+            "if=none,format=raw,file=image.img,id=foo",
+            "-device",
+            "virtio-blk-device,bus=virtio-mmio-bus.0,drive=foo",
+        ])
+        .args(&["-append", "test"])
         .args(&["-smp", "2"]) // 8 cores
         .arg("-nographic")
         .args(&["-m", "32m"])

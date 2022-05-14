@@ -1,7 +1,7 @@
 use device_tree::{DeviceTree, Node};
 
 const DEVICE_TREE_MAGIC: u32 = 0xD00DFEED;
-use ::alloc::{string::String, vec::Vec, *, boxed::Box};
+use ::alloc::{boxed::Box, string::String, vec::Vec, *};
 use lazy_static::lazy_static;
 use once_cell::race::OnceBox;
 

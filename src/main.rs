@@ -7,14 +7,13 @@
 mod devices;
 mod panic;
 mod sbi;
-mod trap;
 
 extern crate alloc;
 
 use alloc::string::*;
 use alloc::*;
-use core::arch::global_asm;
 use buddy_system_allocator::LockedHeap;
+use core::arch::global_asm;
 
 #[global_allocator]
 static HEAP: LockedHeap<32> = LockedHeap::empty();
