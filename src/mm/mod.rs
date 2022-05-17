@@ -5,8 +5,7 @@ mod page_table;
 use addresses::*;
 use frame_alloctor::*;
 
-//#[test]
-pub fn alloc_mm() {
+pub fn alloc_mm_test() {
     init_allocator(PhysicalPageNumber(0), PhysicalPageNumber(32));
 	
 	{
