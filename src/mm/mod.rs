@@ -49,20 +49,20 @@ pub fn alloc_mm_test() {
     }
     println!("multiple pass");
 
-	// todo: test overflow
+    // todo: test overflow
 
-	{
-		let frame = frame_alloc();
-		assert!(frame.is_some());
-		let frames = frame_alloc_multiple(1);
-		assert!(frames.is_some());
-		let frames = frames.unwrap();
-		let frame2: Frame = frames.into();
-		let frame3 = frame_alloc();
-		assert!(frame3.is_some());
-		let frame3 = frame3.unwrap();
-		let frames2: FrameRegion = frame3.into();
-		assert_eq!(frames2.size, 1);
-	}
-	println!("convert pass");
+    {
+        let frame = frame_alloc();
+        assert!(frame.is_some());
+        let frames = frame_alloc_multiple(1);
+        assert!(frames.is_some());
+        let frames = frames.unwrap();
+        let frame2: Frame = frames.into();
+        let frame3 = frame_alloc();
+        assert!(frame3.is_some());
+        let frame3 = frame3.unwrap();
+        let frames2: FrameRegion = frame3.into();
+        assert_eq!(frames2.size, 1);
+    }
+    println!("convert pass");
 }
