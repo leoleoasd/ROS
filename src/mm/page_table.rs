@@ -45,7 +45,7 @@ impl PageTableEntry {
 
 	pub fn ppn(&self) -> PhysicalPageNumber {
 		unsafe {
-			PhysicalPageNumber::from(((self.bits >> 10) & ((1_u64 << 44) - 1)) as usize)
+			PhysicalPageNumber::from_usize(((self.bits >> 10) & ((1_u64 << 44) - 1)) as usize)
 		}
 	}
 	pub fn flags(&self) -> PTEFlags {

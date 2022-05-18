@@ -51,21 +51,21 @@ impl From<PhysicalAddress> for usize {
 }
 
 impl PhysicalPageNumber {
-    pub unsafe fn from(n: usize) -> Self { Self(n & ( (1 << PPN_WIDTH_SV39) - 1 )) }
+    pub unsafe fn from_usize(n: usize) -> Self { Self(n & ( (1 << PPN_WIDTH_SV39) - 1 )) }
 }
 impl From<PhysicalPageNumber> for usize {
     fn from(ppn: PhysicalPageNumber) -> Self { ppn.0 }
 }
 
 impl VirtualAddress {
-    pub unsafe fn from(n: usize) -> Self { Self(n & ( (1 << PA_WIDTH_SV39) - 1 )) }
+    pub unsafe fn from_usize(n: usize) -> Self { Self(n & ( (1 << PA_WIDTH_SV39) - 1 )) }
 }
 impl From<VirtualAddress> for usize {
     fn from(va: VirtualAddress) -> Self { va.0 }
 }
 
 impl VirtualPageNumber {
-    pub unsafe fn from(n: usize) -> Self { Self(n & ( (1 << PPN_WIDTH_SV39) - 1 )) }
+    pub unsafe fn from_usize(n: usize) -> Self { Self(n & ( (1 << PPN_WIDTH_SV39) - 1 )) }
 }
 impl From<VirtualPageNumber> for usize {
     fn from(vpn: VirtualPageNumber) -> Self { vpn.0 }
