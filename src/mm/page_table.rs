@@ -131,7 +131,7 @@ impl PageTable {
                 return None; // should be dentry but is not
             }
         }
-        None // should never be used
+        unreachable!("The loop should always return.");
     }
 
     /// Try finding correspond `PageTableEntry` and return.
@@ -155,6 +155,6 @@ impl PageTable {
                 return None; // should be dentry but is not
             }
         }
-        None // should never be used
+        unreachable!("The loop should always return.");
     }
 }
