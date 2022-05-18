@@ -47,9 +47,9 @@ fn print(node: &Node, level: usize) {
     }
 }
 
-static DT: OnceBox<DeviceTree> = OnceBox::new();
+pub static DT: OnceBox<DeviceTree> = OnceBox::new();
 
-pub unsafe fn print_tree(dtb_pa: usize) {
+pub unsafe fn init_tree(dtb_pa: usize) {
     log!("Tree addr: {:p}", dtb_pa as *const u8);
     let header = &*(dtb_pa as *const DtbHeader);
     let magic = u32::from_be(header.magic);
@@ -61,15 +61,15 @@ pub unsafe fn print_tree(dtb_pa: usize) {
         let data = core::slice::from_raw_parts(dtb_pa as *const u8, size as usize);
         if let Ok(dt) = DeviceTree::load(data) {
             DT.set(Box::new(dt)).unwrap();
-            print(&DT.get().unwrap().root, 0);
-            for node in &DT.get().unwrap().root.children {
-                if node.name.starts_with("memory") {
-                    let reg = node.prop_raw("reg").unwrap();
-                    let start: usize = usize::from_be_bytes(reg[0..8].try_into().unwrap());
-                    let size: usize = usize::from_be_bytes(reg[8..16].try_into().unwrap());
-                    log!("Memory start: {:X}, size: {:X}", start, size);
-                }
-            }
+            // print(&DT.get().unwrap().root, 0);
+            // for node in &DT.get().unwrap().root.children {
+            //     if node.name.starts_with("memory") {
+            //         let reg = node.prop_raw("reg").unwrap();
+            //         let start: usize = usize::from_be_bytes(reg[0..8].try_into().unwrap());
+            //         let size: usize = usize::from_be_bytes(reg[8..16].try_into().unwrap());
+            //         log!("Memory start: {:X}, size: {:X}", start, size);
+            //     }
+            // }
         } else {
             panic!("Failed to load device tree, maybe not a device tree");
         }

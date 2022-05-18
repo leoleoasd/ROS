@@ -5,10 +5,13 @@
 
 #[macro_use]
 mod devices;
+mod config;
+mod mm;
 mod panic;
 mod sbi;
 
 extern crate alloc;
+extern crate bitflags;
 
 use alloc::string::*;
 use alloc::*;
@@ -52,8 +55,9 @@ extern "C" fn main(hartid: usize, dtb_pa: usize) {
         log!("[{}] Hart ID {} status: {}", hartid, i, result.value);
     }
     unsafe {
-        devices::device_tree::print_tree(dtb_pa);
+        devices::device_tree::init_tree(dtb_pa);
     }
+    mm::init();
     sbi::shutdown();
 }
 fn clear_bss() {
