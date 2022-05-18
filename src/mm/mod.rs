@@ -28,12 +28,6 @@ pub fn init() {
 }
 
 pub fn alloc_mm_test() {
-    extern "C" {
-        fn ekernel();
-    }
-    let start = PhysicalAddress::from(ekernel as usize).ceil().0;
-    // init_allocator(PhysicalPageNumber(start), 0x20);
-
     {
         let frames = frame_alloc_multiple(16);
         assert!(frames.is_some());
@@ -55,36 +49,20 @@ pub fn alloc_mm_test() {
     }
     println!("multiple pass");
 
-    //{
-    //	let frame = frame_alloc();
-    //	assert!(frame.is_some());
-    //	let uframe = frame.unwrap();
-    //	assert_eq!(uframe.ppn, PhysicalPageNumber(start + 0));
-    //	let frames = frame_alloc_multiple(16);
-    //	assert!(frames.is_some());
-    //	let uframes = frames.unwrap();
-    //	assert_eq!(uframes.ppn, PhysicalPageNumber(start + 1));
-    //	let frames2 = frame_alloc_multiple(16);
-    //	assert!(frames2.is_none());
-    //}
-    //println!("overflow pass");
+	// todo: test overflow
 
-    {
-        let frame = frame_alloc();
-        assert!(frame.is_some());
-        let frames = frame_alloc_multiple(1);
-        assert!(frames.is_some());
-        let frames = frames.unwrap();
-        assert_eq!(frames.ppn, PhysicalPageNumber(start + 1));
-        let frame2: Frame = frames.into();
-        assert_eq!(frame2.ppn, PhysicalPageNumber(start + 1));
-        let frame3 = frame_alloc();
-        assert!(frame3.is_some());
-        let frame3 = frame3.unwrap();
-        assert_eq!(frame3.ppn, PhysicalPageNumber(start + 2));
-        let frames2: FrameRegion = frame3.into();
-        assert_eq!(frames2.ppn, PhysicalPageNumber(start + 2));
-        assert_eq!(frames2.size, 1);
-    }
-    println!("convert pass");
+	{
+		let frame = frame_alloc();
+		assert!(frame.is_some());
+		let frames = frame_alloc_multiple(1);
+		assert!(frames.is_some());
+		let frames = frames.unwrap();
+		let frame2: Frame = frames.into();
+		let frame3 = frame_alloc();
+		assert!(frame3.is_some());
+		let frame3 = frame3.unwrap();
+		let frames2: FrameRegion = frame3.into();
+		assert_eq!(frames2.size, 1);
+	}
+	println!("convert pass");
 }
