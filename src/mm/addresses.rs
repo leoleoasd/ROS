@@ -1,5 +1,5 @@
-use core::fmt::{self, Debug, Formatter};
 use crate::config::{PAGE_SIZE, PAGE_SIZE_BITS};
+use core::fmt::{self, Debug, Formatter};
 
 use super::page_table::PageTableEntry;
 
@@ -44,37 +44,59 @@ impl Debug for PhysicalPageNumber {
 /// Convert
 
 impl From<usize> for PhysicalAddress {
-    fn from(n: usize) -> Self { Self(n & ( (1 << PA_WIDTH_SV39) - 1 )) }
+    fn from(n: usize) -> Self {
+        Self(n & ((1 << PA_WIDTH_SV39) - 1))
+    }
 }
 impl From<PhysicalAddress> for usize {
-    fn from(pa: PhysicalAddress) -> Self { pa.0 }
+    fn from(pa: PhysicalAddress) -> Self {
+        pa.0
+    }
 }
 
 impl PhysicalPageNumber {
-    pub unsafe fn from_usize(n: usize) -> Self { Self(n & ( (1 << PPN_WIDTH_SV39) - 1 )) }
+    pub unsafe fn from_usize(n: usize) -> Self {
+        Self(n & ((1 << PPN_WIDTH_SV39) - 1))
+    }
 }
 impl From<PhysicalPageNumber> for usize {
-    fn from(ppn: PhysicalPageNumber) -> Self { ppn.0 }
+    fn from(ppn: PhysicalPageNumber) -> Self {
+        ppn.0
+    }
 }
 
 impl VirtualAddress {
-    pub unsafe fn from_usize(n: usize) -> Self { Self(n & ( (1 << PA_WIDTH_SV39) - 1 )) }
+    pub unsafe fn from_usize(n: usize) -> Self {
+        Self(n & ((1 << PA_WIDTH_SV39) - 1))
+    }
 }
 impl From<VirtualAddress> for usize {
-    fn from(va: VirtualAddress) -> Self { va.0 }
+    fn from(va: VirtualAddress) -> Self {
+        va.0
+    }
 }
 
 impl VirtualPageNumber {
-    pub unsafe fn from_usize(n: usize) -> Self { Self(n & ( (1 << PPN_WIDTH_SV39) - 1 )) }
+    pub unsafe fn from_usize(n: usize) -> Self {
+        Self(n & ((1 << PPN_WIDTH_SV39) - 1))
+    }
 }
 impl From<VirtualPageNumber> for usize {
-    fn from(vpn: VirtualPageNumber) -> Self { vpn.0 }
+    fn from(vpn: VirtualPageNumber) -> Self {
+        vpn.0
+    }
 }
 
 impl PhysicalAddress {
-	pub fn floor(&self) -> PhysicalPageNumber { PhysicalPageNumber(self.0 / PAGE_SIZE) }
-	pub fn ceil(&self) -> PhysicalPageNumber { PhysicalPageNumber((self.0 + PAGE_SIZE - 1) / PAGE_SIZE) }
-	pub fn page_offset(&self) -> usize { self.0 & (PAGE_SIZE - 1) }
+    pub fn floor(&self) -> PhysicalPageNumber {
+        PhysicalPageNumber(self.0 / PAGE_SIZE)
+    }
+    pub fn ceil(&self) -> PhysicalPageNumber {
+        PhysicalPageNumber((self.0 + PAGE_SIZE - 1) / PAGE_SIZE)
+    }
+    pub fn page_offset(&self) -> usize {
+        self.0 & (PAGE_SIZE - 1)
+    }
 }
 
 impl From<PhysicalPageNumber> for PhysicalAddress {
@@ -84,30 +106,24 @@ impl From<PhysicalPageNumber> for PhysicalAddress {
 }
 
 impl From<PhysicalAddress> for PhysicalPageNumber {
-	fn from(pa: PhysicalAddress) -> Self {
-		assert_eq!(pa.page_offset(), 0);
-		pa.floor()
-	}
+    fn from(pa: PhysicalAddress) -> Self {
+        assert_eq!(pa.page_offset(), 0);
+        pa.floor()
+    }
 }
 
 impl PhysicalPageNumber {
     pub fn get_pte_array(&self) -> &'static mut [PageTableEntry] {
         let pa = PhysicalAddress::from(self.clone());
-        unsafe {
-            core::slice::from_raw_parts_mut(pa.0 as *mut PageTableEntry, 512)
-        }
+        unsafe { core::slice::from_raw_parts_mut(pa.0 as *mut PageTableEntry, 512) }
     }
     pub fn get_bytes_array(&self) -> &'static mut [u8] {
         let pa = PhysicalAddress::from(self.clone());
-        unsafe {
-            core::slice::from_raw_parts_mut(pa.0 as *mut u8, 4096)
-        }
+        unsafe { core::slice::from_raw_parts_mut(pa.0 as *mut u8, 4096) }
     }
     pub fn get_mut<T>(&self) -> &'static mut T {
         let pa = PhysicalAddress::from(self.clone());
-        unsafe {
-            (pa.0 as *mut T).as_mut().unwrap()
-        }
+        unsafe { (pa.0 as *mut T).as_mut().unwrap() }
     }
 }
 

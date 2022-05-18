@@ -47,33 +47,15 @@ pub fn alloc_mm_test() {
 	}
 	println!("multiple pass");
 
-	{
-		let frame = frame_alloc();
-		assert!(frame.is_some());
-		let frame = frame.unwrap();
-		let ppn = frame.ppn;
-		println!("{:?}", &ppn);
-		drop(frame);
-	}
-	println!("sigle pass");
-	
-	{
-		let frame = frame_alloc();
-		assert!(frame.is_some());
-		let frames = frame_alloc_multiple(16);
-		assert!(frames.is_some());
-		let frames2 = frame_alloc_multiple(4);
-		assert!(frames2.is_some());
-		println!("u");
-		let uframes = frames.unwrap();
-		println!("{:?}", uframes.ppn);
-		println!("{:?}", frames2.unwrap().ppn);
-		println!("{:?}", frame.unwrap().ppn);
-		let frames = frame_alloc_multiple(8);
-		assert!(frames.is_some());
-		println!("{:?}", frames.unwrap().ppn);
-	}
-	println!("mixed pass");
+    {
+        let frames = frame_alloc_multiple(16);
+        assert!(frames.is_some());
+        let frames = frames.unwrap();
+        let ppn = frames.ppn;
+        println!("{:?}", &ppn);
+        drop(frames);
+    }
+    println!("multiple pass");
 
 	//{
 	//	let frame = frame_alloc();
