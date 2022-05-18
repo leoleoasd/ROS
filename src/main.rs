@@ -6,17 +6,17 @@
 #[macro_use]
 mod devices;
 mod config;
+mod mm;
 mod panic;
 mod sbi;
-mod mm;
 
 extern crate alloc;
 extern crate bitflags;
 
 use alloc::string::*;
 use alloc::*;
-use core::arch::global_asm;
 use buddy_system_allocator::LockedHeap;
+use core::arch::global_asm;
 
 #[global_allocator]
 static HEAP: LockedHeap<32> = LockedHeap::empty();
@@ -83,9 +83,4 @@ fn init_heap() {
         HEAP.lock()
             .init(heap_start as usize, heap_end as usize - heap_start as usize);
     }
-    log!("Testing heap!");
-    let mut vec = vec![1, 2, 3];
-    log!("{:?}", vec);
-    vec.push(1);
-    log!("{:?}", vec);
 }
