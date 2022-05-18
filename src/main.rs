@@ -18,6 +18,8 @@ use alloc::*;
 use core::arch::global_asm;
 use buddy_system_allocator::LockedHeap;
 
+use crate::mm::init;
+
 #[global_allocator]
 static HEAP: LockedHeap<32> = LockedHeap::empty();
 
@@ -57,7 +59,7 @@ extern "C" fn main(hartid: usize, dtb_pa: usize) {
     unsafe {
         devices::device_tree::init_tree(dtb_pa);
     }
-    mm::alloc_mm_test();
+    mm::init();
     sbi::shutdown();
 }
 fn clear_bss() {

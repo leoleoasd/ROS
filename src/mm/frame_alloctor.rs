@@ -58,16 +58,16 @@ impl From<FrameRegion> for Frame {
 
 struct FrameAllocator {
     start: PhysicalPageNumber,
-    end: PhysicalPageNumber,
+    size: usize,
     allocator: SysTlsf<usize>,
 }
 
 impl FrameAllocator {
-    pub fn new(start: PhysicalPageNumber, end: PhysicalPageNumber) -> Self {
+    pub fn new(start: PhysicalPageNumber, size: usize) -> Self {
         Self {
             start,
-            end,
-            allocator: SysTlsf::new(usize::from(end) - usize::from(start)),
+            size,
+            allocator: SysTlsf::new(size),
         }
     }
 }
@@ -106,8 +106,8 @@ unsafe fn frame_dealloc(r: SysTlsfRegion) -> Option<()> {
     ALLOCATOR.get()?.lock().dealloc(r).ok()
 }
 
-pub fn init_allocator(start: PhysicalPageNumber, end: PhysicalPageNumber) {
-    let allocator = FrameAllocator::new(start, end);
+pub fn init_allocator(start: PhysicalPageNumber, size: usize) {
+    let allocator = FrameAllocator::new(start, size);
     let allocator = Mutex::new(allocator);
     ALLOCATOR.set(Box::new(allocator)).ok();
 }
