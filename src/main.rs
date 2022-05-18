@@ -18,8 +18,6 @@ use alloc::*;
 use buddy_system_allocator::LockedHeap;
 use core::arch::global_asm;
 
-use crate::mm::init;
-
 #[global_allocator]
 static HEAP: LockedHeap<32> = LockedHeap::empty();
 
